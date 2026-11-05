@@ -1,0 +1,55 @@
+Timing is on.
+BEGIN
+Time: 0.263 ms
+CREATE FUNCTION
+Time: 15.980 ms
+ conferir_resumo 
+-----------------
+ 
+(1 row)
+
+Time: 2014.455 ms (00:02.014)
+UPDATE 1
+Time: 3.737 ms
+UPDATE 1
+Time: 1.611 ms
+INSERT 0 1
+Time: 2.289 ms
+DELETE 1
+Time: 0.816 ms
+REFRESH MATERIALIZED VIEW
+Time: 1664.234 ms (00:01.664)
+ conferir_resumo 
+-----------------
+ 
+(1 row)
+
+Time: 1626.029 ms (00:01.626)
+ROLLBACK
+Time: 2.491 ms
+ resumo_com_indices_bytes | resumo_sem_indices_bytes 
+--------------------------+--------------------------
+                  2121728 |                  1048576
+(1 row)
+
+Time: 10.114 ms
+REFRESH MATERIALIZED VIEW
+Time: 2007.894 ms (00:02.008)
+                                                                                  QUERY PLAN                                                                                   
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ Limit  (cost=0.57..4.71 rows=10 width=56) (actual time=0.035..0.076 rows=10 loops=1)
+   Buffers: shared hit=39 read=3
+   ->  Nested Loop  (cost=0.57..7950.10 rows=19206 width=56) (actual time=0.034..0.072 rows=10 loops=1)
+         Buffers: shared hit=39 read=3
+         ->  Index Scan using vendas_por_produto_ranking_idx on vendas_por_produto vendas  (cost=0.29..1104.34 rows=19206 width=20) (actual time=0.016..0.030 rows=10 loops=1)
+               Buffers: shared hit=10 read=2
+         ->  Index Scan using produtos_pkey on produtos pr  (cost=0.29..0.36 rows=1 width=40) (actual time=0.003..0.003 rows=1 loops=10)
+               Index Cond: (id = vendas.produto_id)
+               Buffers: shared hit=29 read=1
+ Planning:
+   Buffers: shared hit=39 read=10 dirtied=1
+ Planning Time: 0.773 ms
+ Execution Time: 0.108 ms
+(13 rows)
+
+Time: 1.638 ms
