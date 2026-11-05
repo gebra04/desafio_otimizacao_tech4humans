@@ -420,3 +420,10 @@ docker compose exec -T banco psql -U loja -d loja -c 'REFRESH MATERIALIZED VIEW 
 O refresh recalcula o resumo completo e pode bloquear consultas ao resumo enquanto executa. Para dados modificados em produção, seria necessário implementar uma política de atualização e definir a consistência exigida. Não foram adicionados triggers nem atualização automática; este experimento não garante resultados atualizados entre uma escrita externa e o refresh.
 
 O custo adicional é o espaço ocupado pela visão e seus índices, o cálculo na inicialização e o trabalho de cada refresh. Os limites de CPU e memória dos serviços permanecem os mesmos. Para reproduzir a inicialização com o novo SQL, recrie o banco como orientado neste README; isso apaga os dados locais e gera novamente os dados sintéticos.
+
+
+## Pool de conexões da API
+
+A API reutiliza um único `pg.Pool`, com no máximo 10 conexões por processo e fechamento das conexões ociosas após 30000 ms. `pool.query()` obtém e devolve a conexão automaticamente, inclusive em caso de erro na consulta. Ao atingir o limite, novas consultas aguardam uma conexão livre. Erros em conexões ociosas são registrados pelo listener do pool.
+
+O limite de 10 é uma configuração inicial a ser medida, não uma garantia de dimensionamento ótimo. Não foram alterados os limites de CPU ou memória, o limite de conexões do PostgreSQL nem os parâmetros da carga. Conexões reutilizadas podem permanecer abertas entre requisições e consumir memória durante esse período.
