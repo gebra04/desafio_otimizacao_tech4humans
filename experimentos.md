@@ -94,3 +94,23 @@ Comparação com a visão materializada já ativa, usando três execuções com 
 Valores: medianas de três execuções; para recursos, medianas das médias. Todas terminaram sem erro e mantiveram os 42 casos do contrato, com contexto limpo. Não houve aumento de recursos nem alteração das consultas.
 
 A vazão aumentou, mas a mediana geral piorou e algumas rotas rápidas ficaram mais lentas. A espera por conexão pode explicar parte dessa troca; não foi medida separadamente. O p95 geral variou pouco, e o banco continua próximo do limite de CPU. A diferença de memória não pode ser atribuída apenas ao pooling. Outros tamanhos de pool ainda precisam ser comparados. Detalhes e pastas: [resultado.md](diagnostico/pooling/resultado.md).
+
+
+## Comparação: pool de 10 e 20 conexões
+
+O limite de dez foi uma escolha inicial para controlar a concorrência, ainda sem evidência de ser o melhor tamanho. A pedido, foi alterado apenas o limite para vinte, mantendo consultas, recursos e parâmetros de carga. Foram feitas três medições, com contexto limpo, sem erros e com os 42 casos do contrato mantidos.
+
+| Métrica | Pool 10 | Pool 20 |
+|---|---:|---:|
+| Requisições/s gerais | 2.10 | 2.05 |
+| Mediana geral (ms) | 2742.8 | 2140.3 |
+| p95 geral (ms) | 35226.5 | 30577.7 |
+| Cliente por ID: mediana (ms) | 1098.3 | 96.9 |
+| Top-produtos: mediana (ms) | 1305.5 | 106.1 |
+| Pedidos por status: mediana (ms) | 9753.2 | 17896.0 |
+| Vendas por dia: mediana (ms) | 6898.6 | 18245.2 |
+| Memória média do banco (MiB) | 192.4 | 216.8 |
+
+Valores: medianas das três execuções; memória é a mediana das médias. Com vinte conexões, a latência geral e das rotas rápidas melhorou, mas pedidos por status e vendas por dia ficaram mais lentos. A vazão foi ligeiramente menor, sem evidência suficiente para concluir uma diferença estável. Menos espera no pool e mais disputa no banco são hipóteses; esses tempos não foram isolados.
+
+O limite atual foi mantido em vinte. Não houve aumento dos limites de CPU ou memória, mas a memória observada do banco foi maior. Comparação completa e pastas das medições: [resultado.md](diagnostico/pooling-20/resultado.md).
