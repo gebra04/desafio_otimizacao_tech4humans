@@ -405,3 +405,18 @@ Abra o agente dentro da sua cópia desta pasta. Na raiz do t4h-desafios, o `CLAU
 - Em caso de dúvidas, use o canal combinado na largada
 
 Boa sorte no seu desafio!
+
+
+## Resumo de vendas por produto
+
+O arquivo `banco/03-vendas-por-produto.sql` cria uma visão materializada dos totais de unidades e receita por produto, excluindo pedidos cancelados, e índices para buscar o ranking. A rota top-produtos consulta esses totais e junta o cadastro atual de produtos. A expressão da receita preserva a consulta original.
+
+A API deste desafio possui apenas rotas de leitura e os dados são gerados na criação do banco. Nesse cenário, o resumo permanece válido sem atualização periódica. Se pedidos ou itens forem inseridos, alterados ou excluídos por fora da API, atualize o resumo após essas alterações e antes de disponibilizar novas leituras:
+
+```bash
+docker compose exec -T banco psql -U loja -d loja -c 'REFRESH MATERIALIZED VIEW vendas_por_produto;'
+```
+
+O refresh recalcula o resumo completo e pode bloquear consultas ao resumo enquanto executa. Para dados modificados em produção, seria necessário implementar uma política de atualização e definir a consistência exigida. Não foram adicionados triggers nem atualização automática; este experimento não garante resultados atualizados entre uma escrita externa e o refresh.
+
+O custo adicional é o espaço ocupado pela visão e seus índices, o cálculo na inicialização e o trabalho de cada refresh. Os limites de CPU e memória dos serviços permanecem os mesmos. Para reproduzir a inicialização com o novo SQL, recrie o banco como orientado neste README; isso apaga os dados locais e gera novamente os dados sintéticos.
