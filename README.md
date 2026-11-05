@@ -424,6 +424,6 @@ O custo adicional é o espaço ocupado pela visão e seus índices, o cálculo n
 
 ## Pool de conexões da API
 
-A API reutiliza um único `pg.Pool`, com no máximo 10 conexões por processo e fechamento das conexões ociosas após 30000 ms. `pool.query()` obtém e devolve a conexão automaticamente, inclusive em caso de erro na consulta. Ao atingir o limite, novas consultas aguardam uma conexão livre. Erros em conexões ociosas são registrados pelo listener do pool.
+A API reutiliza um único `pg.Pool`, com no máximo 20 conexões por processo e fechamento das conexões ociosas após 30000 ms. `pool.query()` obtém e devolve a conexão automaticamente, inclusive em caso de erro na consulta. Ao atingir o limite, novas consultas aguardam uma conexão livre. Erros em conexões ociosas são registrados pelo listener do pool.
 
-O limite de 10 é uma configuração inicial a ser medida, não uma garantia de dimensionamento ótimo. Não foram alterados os limites de CPU ou memória, o limite de conexões do PostgreSQL nem os parâmetros da carga. Conexões reutilizadas podem permanecer abertas entre requisições e consumir memória durante esse período.
+O limite atual de 20 está sendo comparado ao experimento anterior de 10 conexões; o tamanho ótimo depende da carga e dos recursos disponíveis. Não foram alterados os limites de CPU ou memória, o limite de conexões do PostgreSQL nem os parâmetros da carga. Conexões reutilizadas podem permanecer abertas entre requisições e consumir memória durante esse período.
