@@ -44,7 +44,7 @@ rotas.get('/clientes', assincrono(async (req, res) => {
   }
 
   const linhas = await consultar(
-    'SELECT * FROM clientes WHERE lower(email) = lower($1) ORDER BY id',
+    'SELECT id, nome, email, cidade, criado_em FROM clientes WHERE lower(email) = lower($1) ORDER BY id',
     [email.trim()],
   );
   res.json(linhas.map(formatarCliente));
@@ -54,7 +54,7 @@ rotas.get('/clientes/:id', assincrono(async (req, res) => {
   const id = inteiroPositivo(req.params.id);
   if (id === null) return res.status(400).json({ erro: 'id invalido' });
 
-  const linhas = await consultar('SELECT * FROM clientes WHERE id = $1', [id]);
+  const linhas = await consultar('SELECT id, nome, email, cidade, criado_em FROM clientes WHERE id = $1', [id]);
   if (linhas.length === 0) return res.status(404).json({ erro: 'cliente nao encontrado' });
   res.json(formatarCliente(linhas[0]));
 }));
@@ -63,22 +63,22 @@ rotas.get('/clientes/:id/pedidos', assincrono(async (req, res) => {
   const id = inteiroPositivo(req.params.id);
   if (id === null) return res.status(400).json({ erro: 'id invalido' });
 
-  const clientes = await consultar('SELECT * FROM clientes WHERE id = $1', [id]);
+  const clientes = await consultar('SELECT 1 AS existe FROM clientes WHERE id = $1', [id]);
   if (clientes.length === 0) return res.status(404).json({ erro: 'cliente nao encontrado' });
 
   const pedidos = await consultar(
-    'SELECT * FROM pedidos WHERE cliente_id = $1 ORDER BY criado_em DESC, id DESC',
+    'SELECT id, status, criado_em FROM pedidos WHERE cliente_id = $1 ORDER BY criado_em DESC, id DESC',
     [id],
   );
 
   const resposta = [];
   for (const pedido of pedidos) {
-    const itens = await consultar('SELECT * FROM itens_pedido WHERE pedido_id = $1 ORDER BY id', [pedido.id]);
+    const itens = await consultar('SELECT produto_id, quantidade, preco_unitario_centavos FROM itens_pedido WHERE pedido_id = $1 ORDER BY id', [pedido.id]);
 
     const itensFormatados = [];
     let total = 0;
     for (const item of itens) {
-      const [produto] = await consultar('SELECT * FROM produtos WHERE id = $1', [item.produto_id]);
+      const [produto] = await consultar('SELECT nome FROM produtos WHERE id = $1', [item.produto_id]);
       itensFormatados.push({
         produto_id: item.produto_id,
         produto_nome: produto.nome,
@@ -111,7 +111,7 @@ rotas.get('/pedidos', assincrono(async (req, res) => {
 
   const [contagem] = await consultar('SELECT count(*) AS total FROM pedidos WHERE status = $1', [status]);
   const linhas = await consultar(
-    'SELECT * FROM pedidos WHERE status = $1 ORDER BY criado_em DESC, id DESC LIMIT $2 OFFSET $3',
+    'SELECT id, cliente_id, status, criado_em FROM pedidos WHERE status = $1 ORDER BY criado_em DESC, id DESC LIMIT $2 OFFSET $3',
     [status, TAMANHO_PAGINA, (pagina - 1) * TAMANHO_PAGINA],
   );
 
@@ -133,7 +133,7 @@ rotas.get('/produtos/busca', assincrono(async (req, res) => {
   if (termo.length < 3) return res.status(400).json({ erro: 'o termo de busca precisa ter pelo menos 3 caracteres' });
 
   const linhas = await consultar(
-    "SELECT * FROM produtos WHERE nome ILIKE '%' || $1 || '%' ORDER BY nome, id LIMIT 20",
+    "SELECT id, nome, categoria, preco_centavos FROM produtos WHERE nome ILIKE '%' || $1 || '%' ORDER BY nome, id LIMIT 20",
     [termo],
   );
   res.json(linhas.map((linha) => ({
@@ -156,7 +156,7 @@ rotas.get('/relatorios/vendas-por-dia', assincrono(async (req, res) => {
   }
 
   const linhas = await consultar(
-    `SELECT p.id AS pedido_id, p.criado_em, p.observacoes, i.quantidade, i.preco_unitario_centavos
+    `SELECT p.id AS pedido_id, p.criado_em, i.quantidade, i.preco_unitario_centavos
        FROM pedidos p
        JOIN itens_pedido i ON i.pedido_id = p.id
       WHERE p.criado_em::date BETWEEN $1 AND $2
