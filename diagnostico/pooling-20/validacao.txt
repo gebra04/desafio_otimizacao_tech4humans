@@ -1,0 +1,3 @@
+OK: consultas sequenciais reutilizam a conexão
+OK: conexão devolvida ao pool após erro SQL
+OK: consultas concorrentes concluem respeitando o limite de conexões
