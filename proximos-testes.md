@@ -10,3 +10,8 @@ Comparação completa, custos e pastas: [resultado.md](diagnostico/top-produtos-
 
 - Se houver escritas: definir atualização transacional por triggers ou política de refresh e testar consistência e custo de escrita.
 - Para a carga atual: investigar índices e consultas repetidas da rota pedidos-do-cliente, que continua lenta. Ainda não implementado nem medido.
+
+
+## Teste concluído: pooling
+
+Antes das demais pendências, foi implementado um único pg.Pool com até dez conexões e realizadas três medições, com contrato mantido. A vazão aumentou, mas houve regressão de latência em algumas rotas. Comparação, validação e limitações em [resultado.md](diagnostico/pooling/resultado.md). O ajuste de outros tamanhos de pool permanece como experimento futuro.

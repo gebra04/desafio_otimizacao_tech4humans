@@ -1,0 +1,17 @@
+Medição: 04-pooling
+Carga: 20 usuários virtuais por 60s
+
+Requisições:        156
+Requisições/s:      2.10
+Tempo de resposta:  mediana 2742.8 ms | p95 35226.5 ms | p99 40044.6 ms
+Erros:              0.00%
+
+Por rota:
+rota                  req       mediana       p95           p99           erros   
+cliente               44        797.5 ms      2196.9 ms     2571.9 ms     0.0%    
+cliente-por-email     25        2801.4 ms     4320.4 ms     4787.7 ms     0.0%    
+pedidos-do-cliente    32        28497.3 ms    40044.6 ms    46162.9 ms    0.0%    
+pedidos-por-status    18        9753.2 ms     13366.2 ms    13631.7 ms    0.0%    
+busca-produtos        24        1602.9 ms     2821.0 ms     2980.1 ms     0.0%    
+vendas-por-dia        12        6898.6 ms     14654.4 ms    14699.1 ms    0.0%    
+top-produtos          1         1901.0 ms     1901.0 ms     1901.0 ms     0.0%    
