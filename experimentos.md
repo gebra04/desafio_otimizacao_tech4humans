@@ -32,4 +32,6 @@ WARN[0069] Request Failed error="Get \"http://api:3000/relatorios/top-produtos?l
 
 Vou dar uma olhada nas querys do banco para ver se estão otimizadas e verificar se consigo evitar o timeout. Notei duas coisas que podem melhorar o desempenho, ao selecionar as tuplas, muitas colunas que não são utilizadas são selecionadas, isso pode estar ajudando a sobrecarregar a memória, vou testar essa hipótese removendo os campos dispensáveis na busca. A segunda coisa foi que algumas querys precisam de muitos joins e fazem a busca ficar lenta ou impossível no tempo delimitado, vou criar uma coluna do preço vendido de cada produto, pois evita fazer varios joins em uma consulta simples e relativamente comum.
 
-O gasto de memória com a diminuição das colunas não foi notável
+- O gasto de memória com a diminuição das colunas não foi notável
+
+- Adicionei o campo {nome do campo} à tabela de produtos para diminuir o número de joins para fazer acesso a uma pesquisa que estava dando timeout, além disso foi preciso adicionar trigger para quando um produto for comprado somar a esse valor e sempre mante-lo atualizado.
