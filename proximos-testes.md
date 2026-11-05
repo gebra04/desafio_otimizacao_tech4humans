@@ -15,3 +15,8 @@ Comparação completa, custos e pastas: [resultado.md](diagnostico/top-produtos-
 ## Teste concluído: pooling
 
 Antes das demais pendências, foi implementado um único pg.Pool com até dez conexões e realizadas três medições, com contrato mantido. A vazão aumentou, mas houve regressão de latência em algumas rotas. Comparação, validação e limitações em [resultado.md](diagnostico/pooling/resultado.md). O ajuste de outros tamanhos de pool permanece como experimento futuro.
+
+
+## Teste concluído: pool de 20 conexões
+
+O limite de vinte foi comparado ao de dez em três medições com os mesmos parâmetros e contrato mantido. O limite atual é vinte: melhorou a latência geral e das rotas rápidas nas medições, com piora em algumas consultas pesadas e sem ganho de vazão sobre dez. Comparação completa em [resultado.md](diagnostico/pooling-20/resultado.md).
